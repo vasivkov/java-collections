@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class MyHashMap<K, V> implements Map<K, V> {
     private List<List<Entry<K, V>>> buckets = new ArrayList<>(16);
-    private int capacity;
+    public int capacity;
     private final int startCapacity ;
     private final double LOAD_FACTOR = 0.75;
     private int count = 0;
@@ -23,9 +23,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     public MyHashMap(int myCapacity) {
         this.capacity = myCapacity;
-        for (int i = 0; i < capacity; i++) {
-            buckets.add(new LinkedList<Entry<K, V>>());
-        }
+       initWithEmptyLists();
         startCapacity = capacity;
     }
 
@@ -132,6 +130,9 @@ public class MyHashMap<K, V> implements Map<K, V> {
             if (buckets.get(0).isEmpty()){
                 buckets.get(0).add(new AbstractMap.SimpleEntry<K, V>(key, value));
                 count++;
+                if (capacity * LOAD_FACTOR < count ){
+                    reHash();
+                }
 
             }else{
                 List<Entry<K, V>> innerList = buckets.get(0);
@@ -144,6 +145,11 @@ public class MyHashMap<K, V> implements Map<K, V> {
                 }
                 innerList.add((new AbstractMap.SimpleEntry<K, V>(key, value)));
                 count++;
+                if (capacity * LOAD_FACTOR < count ){
+                    reHash();
+                }
+
+
 
             }
             return null;
@@ -154,6 +160,10 @@ public class MyHashMap<K, V> implements Map<K, V> {
         if (buckets.get(indexOfBuckets).isEmpty()) {
             buckets.get(indexOfBuckets).add(new AbstractMap.SimpleEntry<K, V>(key, value));
             count++;
+            if (capacity * LOAD_FACTOR < count ){
+                reHash();
+            }
+
         } else {
             List<Entry<K, V>> innerList = buckets.get(indexOfBuckets);
             for (Entry<K, V> entry : innerList) {
@@ -166,6 +176,10 @@ public class MyHashMap<K, V> implements Map<K, V> {
             }
             innerList.add(new AbstractMap.SimpleEntry<K, V>(key, value));
             count++;
+            if (capacity * LOAD_FACTOR < count ){
+                reHash();
+            }
+
 
         }
         return null;
@@ -263,5 +277,28 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
         return entries;
     }
+
+    private void  reHash (){
+        List<Entry<K, V>> tempList = new ArrayList<>();
+        for (List<Entry<K, V>> bucket : buckets) {
+            tempList.addAll(bucket);
+        }
+        clear();
+        capacity *= 2;
+        initWithEmptyLists();
+        for (Entry<K, V> aTempList : tempList) {
+            put(aTempList.getKey(), aTempList.getValue());
+
+        }
+
+    }
+
+    private void initWithEmptyLists (){
+        for (int i = 0; i < capacity; i++) {
+            buckets.add(new LinkedList<Entry<K, V>>());
+        }
+    }
+
+
 }
 

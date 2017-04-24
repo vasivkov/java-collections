@@ -3,10 +3,7 @@ package com.training.collections;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -83,6 +80,19 @@ public class MyHashMapTest {
 
     }
 
+    @Test
+    public void testPut2(){
+//        MyHashMap<Integer, Integer> testMap = new MyHashMap<>();
+        for (int i = 0; i < 16; i++){
+            myHashMap.put(i, "nnn" );
+        }
+        System.out.println(myHashMap.capacity);
+
+
+
+
+    }
+
 
     @Test
     public void testContainsNullValue() throws Exception {
@@ -125,6 +135,10 @@ public class MyHashMapTest {
         listOfValues.add(null);
         assertEquals(listOfValues, myHashMap.values());
     }
+
+
+
+
 
 
 }
