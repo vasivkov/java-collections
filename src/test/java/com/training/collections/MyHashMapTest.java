@@ -4,6 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.Future;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -80,18 +83,6 @@ public class MyHashMapTest {
 
     }
 
-    @Test
-    public void testPut2(){
-//        MyHashMap<Integer, Integer> testMap = new MyHashMap<>();
-        for (int i = 0; i < 16; i++){
-            myHashMap.put(i, "nnn" );
-        }
-        System.out.println(myHashMap.capacity);
-
-
-
-
-    }
 
 
     @Test
@@ -127,7 +118,7 @@ public class MyHashMapTest {
     }
 
     @Test
-    public void testValues(){ // плохой тест. почему-то зависит от порядка вставки в лист
+    public void testValues(){
         List<String> listOfValues = new ArrayList<>();
         listOfValues.add("b");
         listOfValues.add("d");
@@ -135,10 +126,4 @@ public class MyHashMapTest {
         listOfValues.add(null);
         assertEquals(listOfValues, myHashMap.values());
     }
-
-
-
-
-
-
 }
