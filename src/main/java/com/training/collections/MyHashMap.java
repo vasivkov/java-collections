@@ -5,16 +5,16 @@ package com.training.collections;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by vasya on 13/04/17.
  */
 public class MyHashMap<K, V> implements Map<K, V> {
     private List<List<Entry<K, V>>> buckets = new ArrayList<>(16);
-    public int capacity;
-    private final int startCapacity;
-    private final double LOAD_FACTOR = 0.75;
-    private int count = 0;
+    private int capacity;
+    private static final double LOAD_FACTOR = 0.75;
+    private int count;
 
     public MyHashMap() {
         this(16);
@@ -24,7 +24,6 @@ public class MyHashMap<K, V> implements Map<K, V> {
     public MyHashMap(int myCapacity) {
         this.capacity = myCapacity;
         initWithEmptyLists();
-        startCapacity = capacity;
     }
 
     @Override
@@ -39,14 +38,9 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
-        if (key == null) {
-           return buckets.get(0).stream().anyMatch(k -> k.getKey() == null);
-        }
 
-        int indexOfBucket = Math.abs(key.hashCode()) % capacity;
-
-       return buckets.get(indexOfBucket).stream().anyMatch( k -> k.getKey().equals(key));
-
+        int indexOfBucket = (key == null) ? 0 : Math.abs(key.hashCode()) % capacity;
+        return buckets.get(indexOfBucket).stream().anyMatch(k -> Objects.equals(key, k.getKey()));
     }
 
     @Override
@@ -57,70 +51,19 @@ public class MyHashMap<K, V> implements Map<K, V> {
     @Override
     public V get(Object key) {
 
-        if (key == null) {
-            if (buckets.get(0).isEmpty()) {
-                return null;
-            } else {
-                for (Entry<K, V> entry : buckets.get(0)) {
-                    if (entry.getKey() == null) {
-                        return entry.getValue();
-                    }
-                }
-                return null;
-            }
-        }
 
-        if (buckets.isEmpty()) {
-            return null;
-        }
-        int indexOfBucket = Math.abs(key.hashCode()) % capacity;
-
-
-        if (buckets.get(indexOfBucket).isEmpty()) {
-            return null;
-        } else {
-            List<Entry<K, V>> bucket = buckets.get(indexOfBucket);
-            for (Entry<K, V> aBucket : bucket) {
-                if (aBucket.getKey().equals(key)) {
-                    return aBucket.getValue();
-                }
-            }
-        }
-        return null;
+        int indexOfBucket = (key == null) ? 0 : Math.abs(key.hashCode()) % capacity;
+        return buckets.get(indexOfBucket).stream()
+                .filter(k -> Objects.equals(k.getKey(), key))
+                .map(entry -> entry.getValue())
+                .findFirst().orElse(null);
     }
 
     @Override
     public V put(K key, V value) {
 
-        if (key == null) {
-            if (buckets.get(0).isEmpty()) {
-                buckets.get(0).add(new AbstractMap.SimpleEntry<K, V>(key, value));
-                count++;
-                if (capacity * LOAD_FACTOR < count) {
-                    reHash();
-                }
 
-            } else {
-                List<Entry<K, V>> innerList = buckets.get(0);
-                for (Entry<K, V> entry : innerList) {
-                    if (entry.getKey() == null) {
-                        V previousValue = entry.getValue();
-                        entry.setValue(value);
-                        return previousValue;
-                    }
-                }
-                innerList.add((new AbstractMap.SimpleEntry<K, V>(key, value)));
-                count++;
-                if (capacity * LOAD_FACTOR < count) {
-                    reHash();
-                }
-
-
-            }
-            return null;
-        }
-
-        int indexOfBuckets = Math.abs(key.hashCode()) % capacity;
+        int indexOfBuckets = (key == null) ? 0 :  Math.abs(key.hashCode()) % capacity;
 
         if (buckets.get(indexOfBuckets).isEmpty()) {
             buckets.get(indexOfBuckets).add(new AbstractMap.SimpleEntry<K, V>(key, value));
@@ -132,7 +75,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
         } else {
             List<Entry<K, V>> innerList = buckets.get(indexOfBuckets);
             for (Entry<K, V> entry : innerList) {
-                if (key.equals(entry.getKey())) {
+                if (Objects.equals(key, entry.getKey())) {
                     V previousValue = entry.getValue();
                     entry.setValue(value);
                     return previousValue;
@@ -152,28 +95,13 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     @Override
     public V remove(Object key) {
-
-        if (key == null) {
-            if (buckets.get(0).isEmpty()) {
-                return null;
-            }
-            for (int i = 0; i < buckets.get(0).size(); i++) {
-                if (buckets.get(0).get(i).getKey() == null) {
-                    count--;
-                    return buckets.get(0).remove(i).getValue();
-                }
-            }
-            return null;
-        }
-
-        int indexOfBucket = key.hashCode() % capacity;
+        
+        int indexOfBucket = (key == null) ? 0 : key.hashCode() % capacity;
         List<Entry<K, V>> innerList = buckets.get(indexOfBucket);
         for (int i = 0; i < innerList.size(); i++) {
-            if (innerList.get(i).getKey().equals(key)) {
-                V delValue = innerList.get(i).getValue();
-                innerList.remove(i);
+            if (Objects.equals(innerList.get(i).getKey(),key) ) {
                 count--;
-                return delValue;
+                return innerList.remove(i).getValue();
             }
         }
         return null;
@@ -193,54 +121,27 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     @Override
     public void clear() {
-        for (int i = 0; i < buckets.size(); i++) {
-            if (i > startCapacity) {
-                buckets.remove(i);
-            } else {
-                buckets.get(i).clear();
-            }
-        }
-
+        buckets.clear();
+        initWithEmptyLists();
         count = 0;
     }
 
     @Override
     public Set<K> keySet() {
-        Set<K> keys = new HashSet<>();
+       return buckets.stream().flatMap(list -> list.stream()).map(entry -> entry.getKey()).collect(Collectors.toSet());
 
-        for (List<Entry<K, V>> bucket : buckets) {
-            for (Entry<K, V> aBucket : bucket) {
-                keys.add(aBucket.getKey());
-            }
-
-        }
-
-        return keys;
     }
 
     @Override
     public Collection<V> values() {
-        Collection<V> values = new ArrayList<V>();
-        for (List<Entry<K, V>> bucket : buckets) {
-            for (Entry<K, V> aBucket : bucket) {
-                values.add(aBucket.getValue());
-            }
+       return buckets.stream().flatMap(list -> list.stream()).map(val -> val.getValue()).collect(Collectors.toList());
 
-        }
-        return values;
     }
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        Set<Entry<K, V>> entries = new HashSet<>();
-        for (List<Entry<K, V>> bucket : buckets) {
-            for (Entry<K, V> aBucket : bucket) {
-                entries.add(new AbstractMap.SimpleEntry<K, V>(aBucket.getKey(), aBucket.getValue()));
-            }
+        return buckets.stream().flatMap(list -> list.stream()).collect(Collectors.toSet());
 
-        }
-
-        return entries;
     }
 
     private void reHash() {
@@ -250,17 +151,15 @@ public class MyHashMap<K, V> implements Map<K, V> {
         }
         clear();
         capacity *= 2;
-        initWithEmptyLists();
         for (Entry<K, V> aTempList : tempList) {
             put(aTempList.getKey(), aTempList.getValue());
-
         }
 
     }
 
     private void initWithEmptyLists() {
         for (int i = 0; i < capacity; i++) {
-            buckets.add(new LinkedList<Entry<K, V>>());
+            buckets.add(new LinkedList<>());
         }
     }
 

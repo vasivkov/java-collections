@@ -54,6 +54,11 @@ public class MyHashMapTest {
         assertEquals(true, myHashMap.containsKey(1));
     }
 
+    @Test
+    public void testContainsKeyNull() throws  Exception{
+        assertTrue( myHashMap.containsKey(null));
+    }
+
 
     @Test
     public void testContainsValue() throws  Exception{
@@ -126,4 +131,7 @@ public class MyHashMapTest {
         listOfValues.add(null);
         assertEquals(listOfValues, myHashMap.values());
     }
+
+
+    
 }
