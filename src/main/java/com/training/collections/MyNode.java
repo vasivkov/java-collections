@@ -3,12 +3,12 @@ package com.training.collections;
 /**
  * Created by vasya on 07/06/17.
  */
-class MyNode {
-    private String dataStr;
+class MyNode <T> {
+    private T t;
     MyNode previous;
 
-    public void setDataStr(String dataStr) {
-        this.dataStr = dataStr;
+    public void setT(T t) {
+        this.t = t;
     }
 
     MyNode getPrevious() {
@@ -19,19 +19,19 @@ class MyNode {
         this.previous = previous;
     }
 
-    String getDataStr() {
-        return dataStr;
+    T getT() {
+        return t;
     }
 
 
-    MyNode(String dataStr) {
-        this.dataStr = dataStr;
+    MyNode(T t) {
+        this.t = t;
         previous = null;
     }
 
 
     public String toString() {
-        return "data: " + dataStr; //+ ", previouse node:" + previous;
+        return "data: " + t; //+ ", previouse node:" + previous;
     }
 }
 

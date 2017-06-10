@@ -9,10 +9,10 @@ import static org.junit.Assert.*;
  * Created by vasya on 09/06/17.
  */
 public class LinkTest {
-    private Link link;
+    private Link<String> link;
     @Before
     public void setup() {
-        link = new Link();
+        link = new Link<>();
         link.add("a");
         link.add("b");
         link.add("c");
@@ -23,8 +23,8 @@ public class LinkTest {
 
     @Test
     public void containValueTest()throws Exception{
-        assertTrue(link.containValue("b"));
-        assertFalse(link.containValue("f"));
+        assertTrue(link.contains("b"));
+        assertFalse(link.contains("f"));
     }
 
     @Test
@@ -34,15 +34,15 @@ public class LinkTest {
 
     @Test
     public void removeValueTest () throws Exception{
-        link.removeValue("c");
+        link.remove("c");
         assertEquals(4, link.size());
-        assertEquals(link.last.getPrevious().getPrevious().getDataStr(), "b");
+        assertEquals(link.last.getPrevious().getPrevious().getT(), "b");
 
     }
 
     @Test
     public void removeValueTest_firstElem () throws Exception{
-        link.removeValue("a");
+        link.remove("a");
         MyNode myNode = link.last.previous.previous.previous.previous;
         assertEquals(null, myNode);
     }
@@ -51,17 +51,20 @@ public class LinkTest {
     @Test
     public void reverseTest() throws Exception{
         link.reverse();
-        assertEquals("a", link.last.getDataStr());
+        assertEquals("a", link.last.getT());
         assertEquals(5, link.size());
-        assertEquals(link.last.getPrevious().getDataStr(), "b");
-        assertEquals(link.last.getPrevious().getPrevious().getDataStr(), "c");
+        assertEquals(link.last.getPrevious().getT(), "b");
+        assertEquals(link.last.getPrevious().getPrevious().getT(), "c");
     }
 
     @Test
     public void testForTest() throws Exception{
         link.printList();
         System.out.println();
-        link.removeValue("a");
+//        link.remove("a");
+//        link.printList();
+
+        link.reverse();
         link.printList();
     }
 

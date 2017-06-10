@@ -3,13 +3,13 @@ package com.training.collections;
 /**
  * Created by vasya on 09/06/17.
  */
-public class Link {
-    MyNode last;
+public class Link<T> {
+    MyNode<T> last;
     private int count;
 
 
-    public void add(String str) {
-        MyNode myNode = new MyNode(str);
+    public void add(T t) {
+        MyNode<T> myNode = new MyNode<>(t);
         myNode.previous = last;
         last = myNode;
         count++;
@@ -19,10 +19,10 @@ public class Link {
         return count;
     }
 
-    public boolean containValue(String str) {
+    public boolean contains(String str) {
         MyNode mn = this.last;
         while (mn != null) {
-            if (mn.getDataStr().equals(str)) {
+            if (mn.getT().equals(str)) {
                 return true;
             }
             mn = mn.previous;
@@ -31,18 +31,17 @@ public class Link {
     }
 
 
-
-    public void removeValue(String str) {
+    public void remove(T t) {
         MyNode mn = this.last;
-        if (mn.getDataStr().equals(str)) {
+        if (mn.getT().equals(t)) {
             last = mn.previous;
             mn.setPrevious(null);
             count--;
         }
 
         while (mn.previous != null) {
-            if (mn.previous.getDataStr().equals(str)) {
-                if (mn.previous.previous == null){
+            if (mn.previous.getT().equals(t)) {
+                if (mn.previous.previous == null) {
                     mn.setPrevious(null);
                     count--;
                     return;
@@ -60,7 +59,7 @@ public class Link {
     public void printList() {
         MyNode mn = this.last;
         while (mn != null) {
-            System.out.print(mn.getDataStr() + " ");
+            System.out.print(mn.getT() + " ");
             mn = mn.previous;
 
         }
@@ -68,6 +67,20 @@ public class Link {
 
 
     public void reverse() {
+
+        MyNode post;
+        MyNode cur;
+        MyNode prev;
+
+        post = last;
+        cur = last.previous;
+        prev = cur.previous;
+        cur.setPrevious(post);
+
+
+        prev = cur;
+
+
     }
 
 }
