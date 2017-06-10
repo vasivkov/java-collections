@@ -80,4 +80,17 @@ public class SinglyLinkedListTest {
         assertEquals(5, singlyLinkedList.size());
     }
 
+    @Test
+    public void addToEndTest() throws Exception{
+        SinglyLinkedList<String> sLL = new SinglyLinkedList<>();
+        sLL.addToEnd("a");
+        sLL.addToEnd("b");
+        sLL.addToEnd("c");
+        sLL.addToEnd("d");
+
+        assertEquals("a", sLL.get(0));
+        assertEquals(4, sLL.size());
+
+    }
+
 }

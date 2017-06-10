@@ -4,7 +4,7 @@ package com.training.collections;
  * Created by vasya on 09/06/17.
  */
 public class SinglyLinkedList<T> {
-    private Node<T> last;
+    private Node<T> head;
     private int count;
 
 
@@ -12,17 +12,31 @@ public class SinglyLinkedList<T> {
         if (index >= count || index < 0) {
             throw new IndexOutOfBoundsException();
         }
-        Node<T> tmp = last;
+        Node<T> tmp = head;
         for (int i = 0; i < index; i++) {
-            tmp = tmp.getPrevious();
+            tmp = tmp.getNext();
         }
         return tmp.getT();
     }
 
     public void add(T t) {
         Node<T> node = new Node<>(t);
-        node.setPrevious(last);
-        last = node;
+        node.setNext(head);
+        head = node;
+        count++;
+    }
+
+    public void addToEnd(T t){
+        Node<T> node = new Node<>(t);
+        if (count == 0){
+            head = node;
+        }else {
+            Node<T> tmp = head;
+            while (tmp.getNext()!= null){
+                tmp = tmp.getNext();
+            }
+            tmp.setNext(node);
+        }
         count++;
     }
     
@@ -31,48 +45,48 @@ public class SinglyLinkedList<T> {
     }
 
     public boolean contains(T t) {
-        Node<T> mn = this.last;
+        Node<T> mn = this.head;
         while (mn != null) {
             if (mn.getT().equals(t)) {
                 return true;
             }
-            mn = mn.getPrevious();
+            mn = mn.getNext();
         }
         return false;
     }
 
 
     public T remove(T t) {
-        Node<T> mn = this.last;
+        Node<T> mn = this.head;
         if (mn.getT().equals(t)) {
-            last = mn.getPrevious();
-            mn.setPrevious(null);
+            head = mn.getNext();
+            mn.setNext(null);
             count--;
             return t;
         }
 
-        while (mn.getPrevious() != null) {
-            if (mn.getPrevious().getT().equals(t)) {
-                if (mn.getPrevious().getPrevious() == null) {
-                    mn.setPrevious(null);
+        while (mn.getNext() != null) {
+            if (mn.getNext().getT().equals(t)) {
+                if (mn.getNext().getNext() == null) {
+                    mn.setNext(null);
                     count--;
                     return t;
                 }
-                mn.setPrevious(mn.getPrevious().getPrevious());
+                mn.setNext(mn.getNext().getNext());
                 count--;
                 return t;
             }
 
-            mn = mn.getPrevious();
+            mn = mn.getNext();
         }
         return null;
     }
 
     public void printList() {
-        Node mn = this.last;
+        Node mn = this.head;
         while (mn != null) {
             System.out.print(mn.getT() + " ");
-            mn = mn.getPrevious();
+            mn = mn.getNext();
 
         }
     }
@@ -81,17 +95,17 @@ public class SinglyLinkedList<T> {
     public void reverse() {
 
         Node<T> right = null;
-        Node<T> current = last;
-        Node<T> left = last.getPrevious();
+        Node<T> current = head;
+        Node<T> left = head.getNext();
 
         while (left != null) {
-            current.setPrevious(right);
+            current.setNext(right);
             right = current;
             current = left;
-            left = left.getPrevious();
-            current.setPrevious(right);
+            left = left.getNext();
+            current.setNext(right);
         }
-        last = current;
+        head = current;
 
     }
 

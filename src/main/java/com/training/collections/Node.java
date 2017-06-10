@@ -5,29 +5,29 @@ package com.training.collections;
  */
 class Node<T> {
     private T t;
-    private Node<T> previous;
+    private Node<T> next;
 
     Node(T t) {
         this.t = t;
-        previous = null;
+        next = null;
     }
 
 
-    Node<T> getPrevious() {
-        return previous;
+    Node<T> getNext() {
+        return next;
     }
 
-    void setPrevious(Node<T> previous) {
-        this.previous = previous;
+    void setNext(Node<T> next) {
+        this.next = next;
     }
 
     T getT() {
         return t;
     }
 
-
+    @Override
     public String toString() {
-        return "data: " + t; //+ ", previouse node:" + previous;
+        return "data: " + t;
     }
 }
 
