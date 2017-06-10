@@ -3,30 +3,26 @@ package com.training.collections;
 /**
  * Created by vasya on 07/06/17.
  */
-class MyNode <T> {
+class Node<T> {
     private T t;
-    MyNode previous;
+    private Node<T> previous;
 
-    public void setT(T t) {
+    Node(T t) {
         this.t = t;
+        previous = null;
     }
 
-    MyNode getPrevious() {
+
+    Node<T> getPrevious() {
         return previous;
     }
 
-    void setPrevious(MyNode previous) {
+    void setPrevious(Node<T> previous) {
         this.previous = previous;
     }
 
     T getT() {
         return t;
-    }
-
-
-    MyNode(T t) {
-        this.t = t;
-        previous = null;
     }
 
 
