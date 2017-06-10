@@ -7,6 +7,10 @@ class Node<T> {
     private T t;
     private Node<T> next;
 
+    public void setT(T t) {
+        this.t = t;
+    }
+
     Node(T t) {
         this.t = t;
         next = null;
