@@ -1,9 +1,6 @@
 package com.training.collections;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * Created by vasya on 09/06/17.
@@ -44,7 +41,7 @@ public class SinglyLinkedList<T> implements List<T> {
         if (index > count || index < 0) {
             throw new IndexOutOfBoundsException();
         }
-        Node<T> elem = new Node<T>(element);
+        Node<T> elem = new Node<>(element);
         if (index == 0) {
             elem.setNext(head);
             head = elem;
@@ -69,11 +66,11 @@ public class SinglyLinkedList<T> implements List<T> {
         }
         Node<T> node = head;
         Node<T> toBeRemoved;
-        if(index == 0){
+        if (index == 0) {
             head = head.getNext();
             node.setNext(null);
             toBeRemoved = node;
-        }else {
+        } else {
             for (int i = 0; i < index - 1; i++) {
                 node = node.getNext();
             }
@@ -88,27 +85,50 @@ public class SinglyLinkedList<T> implements List<T> {
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+
+        Node<T> node = head;
+        int index = -1;
+        for (int i = 0; i < count; i++) {
+            if (Objects.equals(o, node.getT())) {
+                index = i;
+                break;
+            }
+            node = node.getNext();
+        }
+        return index;
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        Node<T> node = head;
+        int index = -1;
+        for (int i = 0; i < count; i++) {
+            if (Objects.equals(o, node.getT())) {
+                index = i;
+            }
+            node = node.getNext();
+        }
+        return index;
+
     }
 
     @Override
     public ListIterator<T> listIterator() {
-        return null;
+        throw new RuntimeException("listIterator is not supported Single Lincked List");
     }
 
     @Override
     public ListIterator<T> listIterator(int index) {
-        return null;
+        throw new RuntimeException("listIterator is not supported Single Lincked List");
     }
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return null;
+        List<T> list = new SinglyLinkedList<>();
+        for (int i = fromIndex; i < toIndex; i++) {
+            list.add(this.get(i));
+        }
+        return list;
     }
 
     @Override
@@ -130,31 +150,63 @@ public class SinglyLinkedList<T> implements List<T> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+
+        for (Object elem : c) {
+            if (!this.contains(elem)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return false;
+
+        for (T elem : c) {
+            this.add(elem);
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        return false;
+        int i = index;
+        for (T elem : c) {
+            this.add(i, elem);
+            i++;
+        }
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        int currentCount = count;
+        for (Object o : c) {
+            this.remove(o);
+        }
+        return currentCount != count;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        int currentCount = count;
+        List<T> listForRemoved = new ArrayList<>();
+        Node<T> node = head;
+        while (node != null) {
+            if (!c.contains(node.getT())) {
+                listForRemoved.add(node.getT());
+            }
+            node = node.getNext();
+        }
+        this.removeAll(listForRemoved);
+        return currentCount != count;
     }
 
     @Override
     public void clear() {
+        head.setNext(null);
+        head = null;
+        count = 0;
 
     }
 
@@ -165,37 +217,69 @@ public class SinglyLinkedList<T> implements List<T> {
         count++;
     }
 
-
+    @Override
     public int size() {
         return count;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+
+        return count == 0;
     }
 
 
     @Override
     public Iterator<T> iterator() {
-        return null;
+
+        return new Iterator<T>() {
+            private Node<T> innerHead = head;
+
+            @Override
+            public boolean hasNext() {
+
+                return innerHead != null;
+            }
+
+            @Override
+            public T next() {
+                T t = innerHead.getT();
+                innerHead = innerHead.getNext();
+                return t;
+            }
+        };
     }
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        Object[] arr = new Object[count];
+        Node<T> node = head;
+        int i = 0;
+        while (node != null) {
+            arr[i] = node.getT();
+            i++;
+            node = node.getNext();
+        }
+        return arr;
     }
 
     @Override
     public <T1> T1[] toArray(T1[] a) {
-        return null;
+        Node<T> node = head;
+        int i = 0;
+        while (node != null) {
+            a[i] = (T1) node.getT();
+            i++;
+            node = node.getNext();
+        }
+        return a;
     }
 
     @Override
     public boolean contains(Object t) {
         Node<T> mn = this.head;
         while (mn != null) {
-            if (mn.getT().equals(t)) {
+            if (Objects.equals(t, mn.getT())) {
                 return true;
             }
             mn = mn.getNext();
@@ -207,7 +291,7 @@ public class SinglyLinkedList<T> implements List<T> {
     @Override
     public boolean remove(Object t) {
         Node<T> mn = this.head;
-        if (mn.getT().equals(t)) {
+        if (Objects.equals(t, mn.getT())) {
             head = mn.getNext();
             mn.setNext(null);
             count--;
@@ -215,7 +299,7 @@ public class SinglyLinkedList<T> implements List<T> {
         }
 
         while (mn.getNext() != null) {
-            if (mn.getNext().getT().equals(t)) {
+            if (Objects.equals(t, mn.getNext().getT())) {
                 if (mn.getNext().getNext() == null) {
                     mn.setNext(null);
                     count--;
@@ -256,6 +340,18 @@ public class SinglyLinkedList<T> implements List<T> {
         }
         head = current;
 
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        Node<T> node = head;
+        while (node.getNext() != null) {
+            sb.append(node.getT()).append(" ");
+            node = node.getNext();
+        }
+        sb.append(node.getT());
+        return sb.toString();
     }
 
 }
